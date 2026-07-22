@@ -1,0 +1,189 @@
+// ============================================
+// MENU DRAWER
+// ============================================
+const menuToggleBtn = document.getElementById("menuToggleBtn");
+const menuOverlay = document.getElementById("menuOverlay");
+const menuBackdrop = document.getElementById("menuBackdrop");
+
+function closeMenu() {
+  menuOverlay.classList.remove("open");
+  menuBackdrop.classList.remove("open");
+  menuToggleBtn.setAttribute("aria-expanded", "false");
+}
+function openMenu() {
+  menuOverlay.classList.add("open");
+  menuBackdrop.classList.add("open");
+  menuToggleBtn.setAttribute("aria-expanded", "true");
+}
+
+menuToggleBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (menuOverlay.classList.contains("open")) closeMenu(); else openMenu();
+});
+menuOverlay.querySelectorAll(".menu-overlay-link").forEach((link) => {
+  link.addEventListener("click", closeMenu);
+});
+menuBackdrop.addEventListener("click", closeMenu);
+
+// ============================================
+// ACCORDION (Product Details / Shipping & Returns)
+// ============================================
+document.querySelectorAll(".accordion-toggle").forEach((toggle) => {
+  toggle.addEventListener("click", () => {
+    const panel = document.getElementById(toggle.dataset.target);
+    const isOpen = toggle.getAttribute("aria-expanded") === "true";
+    toggle.setAttribute("aria-expanded", String(!isOpen));
+    panel.style.maxHeight = isOpen ? "0px" : `${panel.scrollHeight}px`;
+  });
+});
+
+// ============================================
+// PRODUCT — single item for this week's drop.
+// To add more products later, turn this into an array
+// and repeat the .product section per item.
+// ============================================
+const PRODUCT = { code: "LSD-101", name: "LSD-101 RUNNER", price: 145.00 };
+
+let selectedSize = null;
+const quantity = 1; // one product for now — bump this if you add a quantity control back later
+let cart = []; // { size, qty, price }
+
+const sizeSelect = document.getElementById("sizeSelect");
+const sizeWarning = document.getElementById("sizeWarning");
+
+sizeSelect.addEventListener("change", () => {
+  selectedSize = sizeSelect.value;
+  sizeWarning.hidden = true;
+});
+
+function addCurrentSelectionToCart() {
+  if (!selectedSize) {
+    sizeWarning.hidden = false;
+    return false;
+  }
+  const existing = cart.find((item) => item.size === selectedSize);
+  if (existing) {
+    existing.qty += quantity;
+  } else {
+    cart.push({ size: selectedSize, qty: quantity, price: PRODUCT.price });
+  }
+  renderCart();
+  return true;
+}
+
+document.getElementById("addToCartBtn").addEventListener("click", () => {
+  if (addCurrentSelectionToCart()) openCart();
+});
+
+// "Buy with Pay" — adds to cart and jumps straight to checkout, mirroring
+// an express-checkout button. Swap in real Apple Pay via Stripe later.
+document.getElementById("applePayBtn").addEventListener("click", () => {
+  if (addCurrentSelectionToCart()) openCheckoutModal();
+});
+
+// ============================================
+// CART DRAWER
+// ============================================
+const cartBtn = document.getElementById("cartBtn");
+const cartCount = document.getElementById("cartCount");
+const cartDrawer = document.getElementById("cartDrawer");
+const cartBackdrop = document.getElementById("cartBackdrop");
+const cartClose = document.getElementById("cartClose");
+const cartItemsEl = document.getElementById("cartItems");
+const cartEmptyEl = document.getElementById("cartEmpty");
+const cartSubtotalEl = document.getElementById("cartSubtotal");
+
+function cartTotalItems() {
+  return cart.reduce((sum, item) => sum + item.qty, 0);
+}
+function cartSubtotal() {
+  return cart.reduce((sum, item) => sum + item.qty * item.price, 0);
+}
+
+function renderCart() {
+  const totalItems = cartTotalItems();
+  cartCount.textContent = totalItems;
+  cartCount.hidden = totalItems === 0;
+
+  cartEmptyEl.hidden = cart.length !== 0;
+  cartItemsEl.innerHTML = cart.map((item, i) => `
+    <div class="cart-item">
+      <div>
+        <p class="cart-item-name">${PRODUCT.name}</p>
+        <p class="cart-item-meta">SIZE ${item.size} · QTY ${item.qty}</p>
+        <button class="cart-item-remove" data-index="${i}">REMOVE</button>
+      </div>
+      <span class="cart-item-price">$${(item.qty * item.price).toFixed(2)}</span>
+    </div>
+  `).join("");
+
+  cartItemsEl.querySelectorAll(".cart-item-remove").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      cart.splice(Number(btn.dataset.index), 1);
+      renderCart();
+    });
+  });
+
+  cartSubtotalEl.textContent = `$${cartSubtotal().toFixed(2)}`;
+}
+
+function openCart() {
+  cartDrawer.classList.add("open");
+  cartBackdrop.classList.add("open");
+  document.body.classList.add("cart-open");
+}
+function closeCart() {
+  cartDrawer.classList.remove("open");
+  cartBackdrop.classList.remove("open");
+  document.body.classList.remove("cart-open");
+}
+
+cartBtn.addEventListener("click", openCart);
+cartClose.addEventListener("click", closeCart);
+cartBackdrop.addEventListener("click", closeCart);
+
+// ============================================
+// CHECKOUT SUMMARY
+// Replace the placeholder inside checkoutBtn's click handler with a real
+// redirect once you have a Stripe Payment Link, e.g.:
+//   window.location.href = "https://buy.stripe.com/your_link_here";
+// ============================================
+const checkoutBtn = document.getElementById("checkoutBtn");
+const checkoutModal = document.getElementById("checkoutModal");
+const checkoutBackdrop = document.getElementById("checkoutBackdrop");
+const checkoutClose = document.getElementById("checkoutClose");
+const checkoutSummary = document.getElementById("checkoutSummary");
+
+function openCheckoutModal() {
+  if (cart.length === 0) return;
+
+  checkoutSummary.innerHTML = cart.map((item) => `
+    <div class="checkout-line">
+      <span>${PRODUCT.name} · SIZE ${item.size} × ${item.qty}</span>
+      <span>$${(item.qty * item.price).toFixed(2)}</span>
+    </div>
+  `).join("") + `
+    <div class="checkout-total">
+      <span>TOTAL</span>
+      <span>$${cartSubtotal().toFixed(2)}</span>
+    </div>
+  `;
+
+  checkoutModal.classList.add("open");
+  checkoutBackdrop.classList.add("open");
+}
+
+checkoutBtn.addEventListener("click", openCheckoutModal);
+
+function closeCheckout() {
+  checkoutModal.classList.remove("open");
+  checkoutBackdrop.classList.remove("open");
+}
+checkoutClose.addEventListener("click", closeCheckout);
+checkoutBackdrop.addEventListener("click", closeCheckout);
+
+// ---- footer year ----
+document.getElementById("year").textContent = new Date().getFullYear();
+
+// ---- initial render ----
+renderCart();
