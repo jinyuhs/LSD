@@ -67,6 +67,25 @@ function addCurrentSelectionToCart() {
   } else {
     cart.push({ size: selectedSize, qty: quantity, price: PRODUCT.price });
   }
+
+  // ---- analytics: add to cart ----
+  if (typeof gtag === "function") {
+    gtag("event", "add_to_cart", {
+      currency: "USD",
+      value: PRODUCT.price * quantity,
+      items: [{ item_id: PRODUCT.code, item_name: PRODUCT.name, price: PRODUCT.price, quantity, item_variant: selectedSize }],
+    });
+  }
+  if (typeof fbq === "function") {
+    fbq("track", "AddToCart", {
+      content_ids: [PRODUCT.code],
+      content_name: PRODUCT.name,
+      content_type: "product",
+      value: PRODUCT.price * quantity,
+      currency: "USD",
+    });
+  }
+
   renderCart();
   return true;
 }
@@ -168,6 +187,24 @@ function openCheckoutModal() {
       <span>$${cartSubtotal().toFixed(2)}</span>
     </div>
   `;
+
+  // ---- analytics: begin checkout ----
+  if (typeof gtag === "function") {
+    gtag("event", "begin_checkout", {
+      currency: "USD",
+      value: cartSubtotal(),
+      items: cart.map((item) => ({ item_id: PRODUCT.code, item_name: PRODUCT.name, price: item.price, quantity: item.qty, item_variant: item.size })),
+    });
+  }
+  if (typeof fbq === "function") {
+    fbq("track", "InitiateCheckout", {
+      content_ids: [PRODUCT.code],
+      content_type: "product",
+      value: cartSubtotal(),
+      currency: "USD",
+      num_items: cartTotalItems(),
+    });
+  }
 
   checkoutModal.classList.add("open");
   checkoutBackdrop.classList.add("open");
