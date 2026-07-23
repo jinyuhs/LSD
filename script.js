@@ -42,7 +42,7 @@ document.querySelectorAll(".accordion-toggle").forEach((toggle) => {
 // To add more products later, turn this into an array
 // and repeat the .product section per item.
 // ============================================
-const PRODUCT = { code: "LSD-101", name: "LSD-101 RUNNER", price: 145.00 };
+const PRODUCT = { code: "LSD-MAG-01", name: "lsd mag slip ons", price: 200.00 };
 
 let selectedSize = null;
 const quantity = 1; // one product for now — bump this if you add a quantity control back later
