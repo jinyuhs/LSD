@@ -212,6 +212,43 @@ function openCheckoutModal() {
 
 checkoutBtn.addEventListener("click", openCheckoutModal);
 
+// ============================================
+// STRIPE — calls the create-checkout-session Netlify Function,
+// which builds a real Checkout Session from the cart and returns
+// its URL. Requires STRIPE_SECRET_KEY set in Netlify's environment
+// variables (Site configuration → Environment variables).
+// ============================================
+const stripeCheckoutBtn = document.getElementById("stripeCheckoutBtn");
+const checkoutError = document.getElementById("checkoutError");
+
+stripeCheckoutBtn.addEventListener("click", async () => {
+  if (cart.length === 0) return;
+
+  checkoutError.hidden = true;
+  stripeCheckoutBtn.disabled = true;
+  stripeCheckoutBtn.textContent = "REDIRECTING…";
+
+  try {
+    const res = await fetch("/.netlify/functions/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cart }),
+    });
+    const data = await res.json();
+
+    if (!res.ok || !data.url) {
+      throw new Error(data.error || "Something went wrong starting checkout.");
+    }
+
+    window.location.href = data.url; // hand off to Stripe's hosted checkout page
+  } catch (err) {
+    checkoutError.textContent = `COULDN'T START CHECKOUT: ${err.message}`;
+    checkoutError.hidden = false;
+    stripeCheckoutBtn.disabled = false;
+    stripeCheckoutBtn.textContent = "PROCEED TO PAYMENT";
+  }
+});
+
 function closeCheckout() {
   checkoutModal.classList.remove("open");
   checkoutBackdrop.classList.remove("open");

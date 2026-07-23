@@ -10,12 +10,12 @@
 
 <!-- ===== GOOGLE ANALYTICS 4 =====
      Replace G-XXXXXXXXXX with your real Measurement ID from analytics.google.com -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-17QPGHT8FX"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-17QPGHT8FX');
+  gtag('config', 'G-XXXXXXXXXX');
 </script>
 
 <!-- ===== META PIXEL =====
@@ -29,11 +29,11 @@ n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];
 s.parentNode.insertBefore(t,s)}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '2304241083738864');
+fbq('init', 'YOUR_PIXEL_ID');
 fbq('track', 'PageView');
 </script>
 <noscript><img height="1" width="1" style="display:none"
-  src="https://www.facebook.com/tr?id=2304241083738864&ev=PageView&noscript=1"
+  src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID&ev=PageView&noscript=1"
 /></noscript>
 </head>
 <body>
@@ -163,7 +163,8 @@ fbq('track', 'PageView');
     <button class="cart-close" id="checkoutClose" aria-label="Close">✕</button>
     <p class="checkout-eyebrow">ORDER SUMMARY</p>
     <div id="checkoutSummary"></div>
-    <p class="checkout-note">Checkout isn't wired to real payments yet — connect a Stripe Payment Link in script.js to make this live.</p>
+    <button class="checkout-btn" id="stripeCheckoutBtn">PROCEED TO PAYMENT</button>
+    <p class="checkout-error" id="checkoutError" hidden></p>
   </div>
 
   <!-- ===== FOOTER ===== -->

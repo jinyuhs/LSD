@@ -1,0 +1,9 @@
+{
+  "name": "lsd-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "LSD — Lysergic Diethylamide storefront",
+  "dependencies": {
+    "stripe": "^16.0.0"
+  }
+}
