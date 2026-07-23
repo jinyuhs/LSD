@@ -208,6 +208,60 @@ function openCheckoutModal() {
 
   checkoutModal.classList.add("open");
   checkoutBackdrop.classList.add("open");
+  renderPayPalButtons();
+}
+
+// ============================================
+// PAYPAL — client-side order creation + capture, no backend needed.
+// Buttons are re-rendered each time the modal opens so the total
+// always reflects the current cart.
+// ============================================
+const paypalContainer = document.getElementById("paypal-button-container");
+const checkoutSuccess = document.getElementById("checkoutSuccess");
+
+function renderPayPalButtons() {
+  if (typeof paypal === "undefined") return; // SDK blocked or failed to load
+  paypalContainer.innerHTML = ""; // clear any previous render before re-rendering
+  checkoutSuccess.hidden = true;
+
+  paypal.Buttons({
+    style: { layout: "vertical", color: "black", shape: "rect", label: "paypal" },
+    createOrder: (data, actions) => {
+      const description = cart.map((item) => `${PRODUCT.name} · SIZE ${item.size} × ${item.qty}`).join("; ");
+      return actions.order.create({
+        purchase_units: [{
+          amount: { value: cartSubtotal().toFixed(2), currency_code: "USD" },
+          description: description.slice(0, 127), // PayPal caps description length
+        }],
+      });
+    },
+    onApprove: (data, actions) => {
+      return actions.order.capture().then((details) => {
+        // ---- analytics: purchase ----
+        if (typeof gtag === "function") {
+          gtag("event", "purchase", {
+            transaction_id: details.id,
+            currency: "USD",
+            value: cartSubtotal(),
+            items: cart.map((item) => ({ item_id: PRODUCT.code, item_name: PRODUCT.name, price: item.price, quantity: item.qty, item_variant: item.size })),
+          });
+        }
+        if (typeof fbq === "function") {
+          fbq("track", "Purchase", { value: cartSubtotal(), currency: "USD" });
+        }
+
+        checkoutSuccess.textContent = `PAYMENT CONFIRMED — THANK YOU, ${details.payer.name.given_name.toUpperCase()}. A CONFIRMATION HAS BEEN SENT TO ${details.payer.email_address}.`;
+        checkoutSuccess.hidden = false;
+        paypalContainer.innerHTML = "";
+        cart = [];
+        renderCart();
+      });
+    },
+    onError: (err) => {
+      checkoutError.textContent = "PAYPAL CHECKOUT FAILED — TRY AGAIN OR USE CARD PAYMENT BELOW.";
+      checkoutError.hidden = false;
+    },
+  }).render("#paypal-button-container");
 }
 
 checkoutBtn.addEventListener("click", openCheckoutModal);

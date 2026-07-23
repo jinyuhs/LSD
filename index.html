@@ -8,6 +8,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Playfair+Display:ital,wght@1,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 
+<!-- ===== PAYPAL SDK =====
+     Client ID is safe to expose publicly (unlike Stripe's secret key).
+     "applepay" component stays dormant until Apple domain verification is added. -->
+<script src="https://www.paypal.com/sdk/js?client-id=ARFnx_5QHDgbqhEzCrzmbQ0KAyXSR-mFrONjQ9D-ryWRduOUxh4ZKpNjFu2aMspShf2AU9tcMcbVxmav&currency=USD&components=buttons,applepay"></script>
+
 <!-- ===== GOOGLE ANALYTICS 4 =====
      Replace G-XXXXXXXXXX with your real Measurement ID from analytics.google.com -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
@@ -76,7 +81,7 @@ fbq('track', 'PageView');
         <span>SHOP</span>
         <span class="menu-overlay-arrow">→</span>
       </a>
-      <a href="#" class="menu-overlay-link">
+      <a href="#about" class="menu-overlay-link">
         <span>ABOUT</span>
         <span class="menu-overlay-arrow">→</span>
       </a>
@@ -163,9 +168,27 @@ fbq('track', 'PageView');
     <button class="cart-close" id="checkoutClose" aria-label="Close">✕</button>
     <p class="checkout-eyebrow">ORDER SUMMARY</p>
     <div id="checkoutSummary"></div>
-    <button class="checkout-btn" id="stripeCheckoutBtn">PROCEED TO PAYMENT</button>
+
+    <div id="paypal-button-container"></div>
+    <p class="checkout-success" id="checkoutSuccess" hidden></p>
     <p class="checkout-error" id="checkoutError" hidden></p>
+
+    <p class="checkout-divider">— OR —</p>
+    <button class="checkout-btn" id="stripeCheckoutBtn">PAY WITH CARD (STRIPE)</button>
   </div>
+
+  <!-- ===== ABOUT ===== -->
+  <section class="about" id="about">
+    <p class="about-copy">
+      LSD is not a statement. It's a label.<br><br>
+      Everything we make is numbered, logged, and released once. A batch. A lot.
+      Shoes, clothing, accessories — each piece cataloged the way anything
+      controlled is cataloged: quietly, precisely, without apology.<br><br>
+      We don't restock. We don't explain the name. What you see is what
+      shipped — nothing engineered to be understood, only worn.<br><br>
+      Handle with care.
+    </p>
+  </section>
 
   <!-- ===== FOOTER ===== -->
   <footer class="site-footer">
