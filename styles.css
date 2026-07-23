@@ -44,11 +44,26 @@ button { font-family: inherit; cursor: pointer; }
   overflow: hidden;
   background: #000;
 }
+.hero-split {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+.hero-panel {
+  flex: 1 1 50%;
+  height: 100%;
+  overflow: hidden;
+}
 .hero-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+}
+@media (max-width: 720px) {
+  .hero-image { height: auto; }
+  .hero-split { flex-direction: column; }
+  .hero-panel { flex: none; width: 100%; height: 62vh; }
 }
 .hero-overlay-gradient {
   position: absolute;
@@ -171,12 +186,13 @@ button { font-family: inherit; cursor: pointer; }
 
 .product-info { text-align: left; }
 .product-name {
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-  font-weight: 400;
-  font-size: clamp(0.85rem, 1.6vw, 0.95rem);
-  margin: 0 0 0.3rem;
-  line-height: 1.4;
-  letter-spacing: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 4vw, 1.9rem);
+  margin: 0 0 0.35rem;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  text-transform: lowercase;
 }
 .product-price {
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
@@ -263,22 +279,24 @@ button { font-family: inherit; cursor: pointer; }
 
 .apple-pay-btn {
   width: 100%;
-  background: #fff;
-  color: #000;
+  background: #000;
+  color: #fff;
   border: none;
-  padding: 0.95rem;
+  border-radius: 4px;
+  padding: 0.85rem;
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: 0.9rem;
   margin-bottom: 0.75rem;
   transition: opacity 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
 }
 .apple-pay-btn:hover { opacity: 0.85; }
-.apple-pay-icon { width: 1.1em; height: 1.1em; flex-shrink: 0; }
+.apple-pay-lockup { display: inline-flex; align-items: center; gap: 0.14rem; }
+.apple-pay-icon { width: 1.05em; height: 1.05em; flex-shrink: 0; }
+.apple-pay-wordmark { font-weight: 600; font-size: 1.05em; letter-spacing: -0.01em; }
 
 .more-payment-note {
   text-align: center;
