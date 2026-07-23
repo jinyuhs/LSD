@@ -24,6 +24,8 @@ menuOverlay.querySelectorAll(".menu-overlay-link").forEach((link) => {
   link.addEventListener("click", closeMenu);
 });
 menuBackdrop.addEventListener("click", closeMenu);
+document.getElementById("menuCloseBtn").addEventListener("click", closeMenu);
+document.getElementById("menuWordmarkLink").addEventListener("click", closeMenu);
 
 // ============================================
 // ACCORDION (Product Details / Shipping & Returns)
