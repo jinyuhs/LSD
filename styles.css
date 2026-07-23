@@ -86,12 +86,13 @@ button { font-family: inherit; cursor: pointer; }
 .site-logo-link { justify-self: start; display: block; }
 .site-wordmark {
   font-family: var(--font-serif);
-  font-weight: 700;
+  font-weight: 900;
+  font-style: normal;
   text-transform: uppercase;
   color: #fff;
   font-size: clamp(1.1rem, 2.6vw, 1.6rem);
-  line-height: 1.2;
-  letter-spacing: 0.02em;
+  line-height: 1.15;
+  letter-spacing: 0.005em;
   margin: 0;
   filter: drop-shadow(0 1px 6px rgba(0, 0, 0, 0.5));
 }
@@ -331,9 +332,7 @@ button { font-family: inherit; cursor: pointer; }
   gap: 0.45rem;
 }
 .apple-pay-btn:hover { opacity: 0.75; }
-.apple-pay-lockup { display: inline-flex; align-items: center; gap: 0.14rem; }
-.apple-pay-icon { width: 1.05em; height: 1.05em; flex-shrink: 0; }
-.apple-pay-wordmark { font-weight: 600; font-size: 1.05em; letter-spacing: -0.01em; }
+.apple-pay-icon-img { height: 22px; width: auto; display: block; }
 
 .more-payment-note {
   text-align: center;
