@@ -78,15 +78,15 @@ button { font-family: inherit; cursor: pointer; }
   right: 0;
   z-index: 5;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: auto 1fr;
   align-items: center;
   padding: clamp(1.1rem, 4vw, 2rem) clamp(1rem, 4vw, 2.5rem);
 }
 
-.site-logo-link { justify-self: center; display: block; }
+.site-logo-link { justify-self: start; display: block; }
 .site-logo {
-  height: 68px;
-  width: auto;
+  width: clamp(200px, 30vw, 380px);
+  height: auto;
   display: block;
   filter: drop-shadow(0 1px 6px rgba(0, 0, 0, 0.5));
 }
@@ -98,8 +98,7 @@ button { font-family: inherit; cursor: pointer; }
   color: #fff;
   padding: 0.3rem;
 }
-.menu-toggle-btn { justify-self: start; }
-.cart-btn { justify-self: end; }
+.menu-toggle-btn { justify-self: end; }
 .cart-btn svg, .menu-toggle-btn svg { width: 22px; height: 22px; filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.5)); }
 .cart-count {
   position: absolute;
@@ -112,6 +111,13 @@ button { font-family: inherit; cursor: pointer; }
   line-height: 1;
   padding: 2px 5px;
   border-radius: 999px;
+}
+/* CART lives inside the menu drawer now — badge needs inline positioning there instead */
+.menu-overlay-link .cart-count {
+  position: static;
+  display: inline-block;
+  margin-left: 0.4rem;
+  border-radius: 3px;
 }
 
 /* ============================================
@@ -146,15 +152,20 @@ button { font-family: inherit; cursor: pointer; }
 .menu-overlay-inner { display: flex; flex-direction: column; }
 .menu-overlay-link {
   display: flex;
+  width: 100%;
   justify-content: space-between;
   align-items: center;
   padding: 1.1rem 0;
+  background: none;
+  border: none;
   border-bottom: 1px solid var(--line);
   font-family: var(--font-display);
   font-weight: 700;
   font-size: clamp(1rem, 3vw, 1.2rem);
   letter-spacing: 0.03em;
   color: #fff;
+  text-align: left;
+  cursor: pointer;
 }
 .menu-overlay-link:last-child { border-bottom: none; }
 .menu-overlay-arrow {
@@ -279,9 +290,9 @@ button { font-family: inherit; cursor: pointer; }
 
 .apple-pay-btn {
   width: 100%;
-  background: #000;
-  color: #fff;
-  border: none;
+  background: #fff;
+  color: #000;
+  border: 1.5px solid #000;
   border-radius: 4px;
   padding: 0.85rem;
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
@@ -293,7 +304,7 @@ button { font-family: inherit; cursor: pointer; }
   justify-content: center;
   gap: 0.45rem;
 }
-.apple-pay-btn:hover { opacity: 0.85; }
+.apple-pay-btn:hover { opacity: 0.75; }
 .apple-pay-lockup { display: inline-flex; align-items: center; gap: 0.14rem; }
 .apple-pay-icon { width: 1.05em; height: 1.05em; flex-shrink: 0; }
 .apple-pay-wordmark { font-weight: 600; font-size: 1.05em; letter-spacing: -0.01em; }
@@ -412,6 +423,29 @@ button { font-family: inherit; cursor: pointer; }
   letter-spacing: 0.1em;
   color: var(--fg-dim);
   margin: 1.25rem 0;
+}
+
+/* ============================================
+   ABOUT
+   ============================================ */
+.about {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: clamp(3rem, 8vw, 5rem) clamp(1rem, 4vw, 2.5rem);
+}
+.about-heading {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.2rem, 2.6vw, 1.5rem);
+  letter-spacing: 0.03em;
+  margin: 0 0 1.5rem;
+}
+.about-copy {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.85;
+  color: var(--fg-dim);
+  margin: 0;
 }
 
 /* ============================================
