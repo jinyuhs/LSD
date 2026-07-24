@@ -224,12 +224,12 @@ button { font-family: inherit; cursor: pointer; }
 
 .product-info { text-align: left; }
 .product-name {
-  font-family: "Times New Roman", Times, serif;
-  font-weight: 700;
-  font-size: clamp(1.4rem, 3.6vw, 1.75rem);
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-weight: 400;
+  font-size: clamp(1.1rem, 2.6vw, 1.3rem);
   margin: 0 0 0.35rem;
   line-height: 1.2;
-  letter-spacing: 0;
+  letter-spacing: 0.01em;
   text-transform: lowercase;
 }
 .product-price {
