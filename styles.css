@@ -400,6 +400,8 @@ button { font-family: inherit; cursor: pointer; }
   left: 50%;
   transform: translate(-50%, -50%) scale(0.96);
   width: min(420px, 90vw);
+  max-height: 88vh;
+  overflow-y: auto;
   background: var(--bg);
   border: 1px solid var(--line);
   padding: 2rem;
