@@ -230,7 +230,6 @@ button { font-family: inherit; cursor: pointer; }
   margin: 0 0 0.35rem;
   line-height: 1.2;
   letter-spacing: 0.01em;
-  text-transform: lowercase;
 }
 .product-price {
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
