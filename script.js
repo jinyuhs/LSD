@@ -1,4 +1,18 @@
 // ============================================
+// DROP COUNTDOWN
+// Edit DROP_DATE to your real drop date whenever you know it.
+// ============================================
+const DROP_DATE = new Date('2026-09-05T00:00:00Z'); // ~1 month out — update to the real date
+
+function renderCountdown() {
+  const el = document.getElementById("dropCountdown");
+  if (!el) return;
+  const daysLeft = Math.ceil((DROP_DATE - new Date()) / (1000 * 60 * 60 * 24));
+  el.textContent = daysLeft > 0 ? `DROPS IN ${daysLeft} DAY${daysLeft === 1 ? "" : "S"}` : "AVAILABLE NOW";
+}
+renderCountdown();
+
+// ============================================
 // MENU DRAWER
 // ============================================
 const menuToggleBtn = document.getElementById("menuToggleBtn");
@@ -103,6 +117,116 @@ document.getElementById("applePayBtn").addEventListener("click", () => {
 });
 
 // ============================================
+// PREORDER — email capture via Netlify Forms, no backend code needed.
+// Submissions land in Netlify dashboard → Forms.
+// ============================================
+const preorderBtn = document.getElementById("preorderBtn");
+const preorderForm = document.getElementById("preorderForm");
+const preorderSuccess = document.getElementById("preorderSuccess");
+const preorderError = document.getElementById("preorderError");
+
+preorderBtn.addEventListener("click", () => {
+  preorderForm.hidden = !preorderForm.hidden;
+  if (!preorderForm.hidden) document.getElementById("preorderEmail").focus();
+});
+
+function encodeFormData(data) {
+  return Object.keys(data)
+    .map((key) => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]))
+    .join("&");
+}
+
+preorderForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const email = document.getElementById("preorderEmail").value;
+  preorderError.hidden = true;
+
+  fetch("/", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: encodeFormData({ "form-name": "preorder", email }),
+  })
+    .then(() => {
+      preorderForm.hidden = true;
+      preorderSuccess.hidden = false;
+
+      if (typeof gtag === "function") {
+        gtag("event", "generate_lead", { currency: "USD", value: 0 });
+      }
+      if (typeof fbq === "function") {
+        fbq("track", "Lead");
+      }
+    })
+    .catch(() => {
+      preorderError.hidden = false;
+    });
+});
+
+// ============================================
+// LOCAL CURRENCY DISPLAY (informational only — the actual PayPal/Stripe
+// charge always stays in USD; this just shows visitors a familiar estimate).
+// ============================================
+const COUNTRY_CURRENCY = {
+  AE: "AED", SA: "SAR", KW: "KWD", QA: "QAR", BH: "BHD", OM: "OMR", JO: "JOD", LB: "LBP", EG: "EGP",
+  GB: "GBP", IE: "EUR", FR: "EUR", DE: "EUR", ES: "EUR", IT: "EUR", NL: "EUR", PT: "EUR", BE: "EUR",
+  AT: "EUR", FI: "EUR", GR: "EUR", LU: "EUR",
+  CA: "CAD", AU: "AUD", NZ: "NZD", IN: "INR", PK: "PKR", TR: "TRY", JP: "JPY", CN: "CNY",
+  SG: "SGD", HK: "HKD", CH: "CHF", SE: "SEK", NO: "NOK", DK: "DKK", ZA: "ZAR", BR: "BRL",
+  MX: "MXN", KR: "KRW", US: "USD",
+};
+
+function detectLocalCurrency() {
+  try {
+    const locale = navigator.language || (navigator.languages && navigator.languages[0]) || "en-US";
+    const region = locale.split("-")[1] ? locale.split("-")[1].toUpperCase() : null;
+    return (region && COUNTRY_CURRENCY[region]) || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+let exchangeRates = null;
+const localCurrency = detectLocalCurrency();
+
+function formatLocalEquivalent(usdAmount) {
+  if (!exchangeRates || !localCurrency || localCurrency === "USD" || !exchangeRates[localCurrency]) return "";
+  const converted = usdAmount * exchangeRates[localCurrency];
+  try {
+    return new Intl.NumberFormat(navigator.language, {
+      style: "currency",
+      currency: localCurrency,
+      maximumFractionDigits: 0,
+    }).format(converted);
+  } catch (e) {
+    return `${localCurrency} ${converted.toFixed(0)}`;
+  }
+}
+
+function updateLocalPriceDisplays() {
+  const priceEl = document.getElementById("productPriceLocal");
+  if (priceEl) {
+    const equiv = formatLocalEquivalent(PRODUCT.price);
+    priceEl.textContent = equiv ? `≈ ${equiv}` : "";
+  }
+  renderCart(); // refreshes cart subtotal with local equivalent too
+}
+
+async function loadExchangeRates() {
+  if (!localCurrency || localCurrency === "USD") return;
+  try {
+    const res = await fetch("https://open.er-api.com/v6/latest/USD");
+    const data = await res.json();
+    if (data && data.rates) {
+      exchangeRates = data.rates;
+      updateLocalPriceDisplays();
+    }
+  } catch (e) {
+    // network hiccup or blocked — USD-only display is a perfectly fine fallback
+  }
+}
+loadExchangeRates();
+
+// ============================================
 // CART DRAWER
 // ============================================
 const cartBtn = document.getElementById("cartBtn");
@@ -145,7 +269,10 @@ function renderCart() {
     });
   });
 
-  cartSubtotalEl.textContent = `$${cartSubtotal().toFixed(2)}`;
+  const subtotalLocal = formatLocalEquivalent(cartSubtotal());
+  cartSubtotalEl.textContent = subtotalLocal
+    ? `$${cartSubtotal().toFixed(2)} (≈ ${subtotalLocal})`
+    : `$${cartSubtotal().toFixed(2)}`;
 }
 
 function openCart() {
@@ -186,7 +313,7 @@ function openCheckoutModal() {
   `).join("") + `
     <div class="checkout-total">
       <span>TOTAL</span>
-      <span>$${cartSubtotal().toFixed(2)}</span>
+      <span>$${cartSubtotal().toFixed(2)}${formatLocalEquivalent(cartSubtotal()) ? ` (≈ ${formatLocalEquivalent(cartSubtotal())})` : ""}</span>
     </div>
   `;
 

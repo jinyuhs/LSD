@@ -236,6 +236,10 @@ button { font-family: inherit; cursor: pointer; }
   font-size: 0.85rem;
   margin: 0 0 0.5rem;
 }
+.price-local {
+  color: var(--fg-dim);
+  font-size: 0.78rem;
+}
 .product-tax-note {
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
   font-style: italic;
@@ -332,6 +336,79 @@ button { font-family: inherit; cursor: pointer; }
 }
 .apple-pay-btn:hover { opacity: 0.75; }
 .apple-pay-icon-img { height: 22px; width: auto; display: block; }
+
+.drop-countdown {
+  text-align: center;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--fg-dim);
+  margin: 0 0 0.6rem;
+}
+
+.preorder-btn {
+  width: 100%;
+  background: transparent;
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0.85rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.75rem;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.preorder-btn:hover { border-color: var(--fg); background: var(--bg-raised); }
+.preorder-mail-icon { width: 16px; height: 16px; flex-shrink: 0; }
+
+.preorder-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.preorder-form[hidden] { display: none; }
+.preorder-email-input {
+  flex: 1;
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.8rem;
+  padding: 0.8rem 0.9rem;
+}
+.preorder-email-input::placeholder { color: var(--fg-dim); }
+.preorder-submit-btn {
+  background: var(--fg);
+  color: var(--bg);
+  border: none;
+  padding: 0 1.1rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  transition: opacity 0.15s ease;
+}
+.preorder-submit-btn:hover { opacity: 0.85; }
+.preorder-success {
+  font-size: 0.72rem;
+  color: var(--fg);
+  line-height: 1.6;
+  margin: 0 0 0.75rem;
+  text-align: center;
+}
+.preorder-error {
+  font-size: 0.68rem;
+  color: #ff6b5e;
+  line-height: 1.6;
+  margin: 0 0 0.75rem;
+  text-align: center;
+}
+.preorder-honeypot { position: absolute; left: -9999px; }
 
 .more-payment-note {
   text-align: center;
