@@ -1,16 +1,32 @@
 // ============================================
 // DROP COUNTDOWN
 // Edit DROP_DATE to your real drop date whenever you know it.
+// Ticks live every second. When it hits zero, remove the "disabled"
+// attribute from #applePayBtn in index.html to turn payment back on.
 // ============================================
-const DROP_DATE = new Date('2026-09-05T00:00:00Z'); // ~1 month out — update to the real date
+const DROP_DATE = new Date('2026-09-05T00:00:00Z'); // ← set to your real drop date
 
 function renderCountdown() {
   const el = document.getElementById("dropCountdown");
   if (!el) return;
-  const daysLeft = Math.ceil((DROP_DATE - new Date()) / (1000 * 60 * 60 * 24));
-  el.textContent = daysLeft > 0 ? `DROPS IN ${daysLeft} DAY${daysLeft === 1 ? "" : "S"}` : "AVAILABLE NOW";
+
+  const diff = DROP_DATE - new Date();
+  if (diff <= 0) {
+    el.textContent = "AVAILABLE NOW";
+    return;
+  }
+
+  const totalSeconds = Math.floor(diff / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const pad = (n) => String(n).padStart(2, "0");
+
+  el.textContent = `${days}D ${pad(hours)}H ${pad(minutes)}M ${pad(seconds)}S`;
 }
 renderCountdown();
+setInterval(renderCountdown, 1000);
 
 // ============================================
 // MENU DRAWER
@@ -165,28 +181,12 @@ preorderForm.addEventListener("submit", (e) => {
 // ============================================
 // LOCAL CURRENCY DISPLAY (informational only — the actual PayPal/Stripe
 // charge always stays in USD; this just shows visitors a familiar estimate).
+// Uses IP-based geolocation rather than browser language, since language
+// settings often don't match a visitor's actual location (e.g. someone
+// in the UAE with their phone set to "English (US)").
 // ============================================
-const COUNTRY_CURRENCY = {
-  AE: "AED", SA: "SAR", KW: "KWD", QA: "QAR", BH: "BHD", OM: "OMR", JO: "JOD", LB: "LBP", EG: "EGP",
-  GB: "GBP", IE: "EUR", FR: "EUR", DE: "EUR", ES: "EUR", IT: "EUR", NL: "EUR", PT: "EUR", BE: "EUR",
-  AT: "EUR", FI: "EUR", GR: "EUR", LU: "EUR",
-  CA: "CAD", AU: "AUD", NZ: "NZD", IN: "INR", PK: "PKR", TR: "TRY", JP: "JPY", CN: "CNY",
-  SG: "SGD", HK: "HKD", CH: "CHF", SE: "SEK", NO: "NOK", DK: "DKK", ZA: "ZAR", BR: "BRL",
-  MX: "MXN", KR: "KRW", US: "USD",
-};
-
-function detectLocalCurrency() {
-  try {
-    const locale = navigator.language || (navigator.languages && navigator.languages[0]) || "en-US";
-    const region = locale.split("-")[1] ? locale.split("-")[1].toUpperCase() : null;
-    return (region && COUNTRY_CURRENCY[region]) || null;
-  } catch (e) {
-    return null;
-  }
-}
-
 let exchangeRates = null;
-const localCurrency = detectLocalCurrency();
+let localCurrency = null;
 
 function formatLocalEquivalent(usdAmount) {
   if (!exchangeRates || !localCurrency || localCurrency === "USD" || !exchangeRates[localCurrency]) return "";
@@ -211,20 +211,26 @@ function updateLocalPriceDisplays() {
   renderCart(); // refreshes cart subtotal with local equivalent too
 }
 
-async function loadExchangeRates() {
-  if (!localCurrency || localCurrency === "USD") return;
+async function loadLocalCurrencyAndRates() {
   try {
-    const res = await fetch("https://open.er-api.com/v6/latest/USD");
-    const data = await res.json();
-    if (data && data.rates) {
-      exchangeRates = data.rates;
+    // Step 1: figure out the visitor's actual country from their IP
+    const geoRes = await fetch("https://ipapi.co/json/");
+    const geoData = await geoRes.json();
+    localCurrency = geoData && geoData.currency ? geoData.currency : null;
+    if (!localCurrency || localCurrency === "USD") return;
+
+    // Step 2: fetch current exchange rates
+    const ratesRes = await fetch("https://open.er-api.com/v6/latest/USD");
+    const ratesData = await ratesRes.json();
+    if (ratesData && ratesData.rates) {
+      exchangeRates = ratesData.rates;
       updateLocalPriceDisplays();
     }
   } catch (e) {
-    // network hiccup or blocked — USD-only display is a perfectly fine fallback
+    // geolocation or rates API blocked/down — USD-only display is a fine fallback
   }
 }
-loadExchangeRates();
+loadLocalCurrencyAndRates();
 
 // ============================================
 // CART DRAWER

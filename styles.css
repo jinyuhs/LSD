@@ -337,14 +337,33 @@ button { font-family: inherit; cursor: pointer; }
 .apple-pay-btn:hover { opacity: 0.75; }
 .apple-pay-icon-img { height: 22px; width: auto; display: block; }
 
-.drop-countdown {
-  text-align: center;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-  font-size: 0.68rem;
-  letter-spacing: 0.08em;
-  color: var(--fg-dim);
-  margin: 0 0 0.6rem;
+.predrop-wrap {
+  position: relative;
+  margin-bottom: 0.75rem;
 }
+.drop-countdown-badge {
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  background: #000;
+  color: #fff;
+  border: 1px solid #fff;
+  border-radius: 999px;
+  padding: 0.28rem 0.85rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.apple-pay-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+  padding-top: 1.15rem;
+}
+.apple-pay-btn:disabled:hover { opacity: 0.45; }
 
 .preorder-btn {
   width: 100%;
